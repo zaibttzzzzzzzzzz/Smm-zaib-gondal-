@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glow SMM Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --glow: #7a00ff;
+            --bg: #ffffff;
+            --card: #f5f5ff;
+            --text: #2a2a2a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .glow-bulbs {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bulb {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: glow 2s infinite;
+            filter: blur(1px);
+        }
+
+        @keyframes glow {
+            0%, 100% { 
+                box-shadow: 0 0 15px currentColor;
+                transform: scale(0.9);
+            }
+            50% { 
+                box-shadow: 0 0 30px currentColor;
+                transform: scale(1.1);
+            }
+        }
+
+        .auth-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 2rem;
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-header i {
+            font-size: 3rem;
+            color: var(--glow);
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--glow);
+            box-shadow: 0 0 10px rgba(122,0,255,0.1);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #7a00ff, #a100ff);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(122,0,255,0.3);
+        }
+
+        #mainPanel {
+            display: none;
+            padding: 20px;
+        }
+
+        .panel-header {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .panel-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #7a00ff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .category-btn {
+            padding: 1.5rem;
+            border: none;
+            border-radius: 15px;
+            background: var(--card);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-btn i {
+            font-size: 2rem;
+            color: var(--glow);
+        }
+
+        .category-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(122,0,255,0.1);
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .payment-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 500px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .payment-details {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-bulbs">
+        <div class="bulb" style="top:10%; left:20%; color:#ff99e6;"></div>
+        <div class="bulb" style="top:30%; left:70%; color:#99ccff;"></div>
+        <div class="bulb" style="top:70%; left:40%; color:#cc99ff;"></div>
+    </div>
+
+    <!-- Login Section -->
+    <div class="auth-container" id="authSection">
+        <div class="brand-header">
+            <i class="fas fa-rocket"></i>
+            <h1>Glow SMM Panel</h1>
+        </div>
+        
+        <div class="input-group">
+            <input type="email" placeholder="Email Address" id="email">
+        </div>
+        
+        <div class="input-group">
+            <input type="password" placeholder="Password" id="password">
+        </div>
+        
+        <button class="auth-btn" onclick="login()">Login</button>
+        
+        <p style="text-align:center; margin-top:1rem;">
+            New user? <a href="#" style="color:var(--glow)" onclick="showRegister()">Create Account</a>
+        </p>
+    </div>
+
+    <!-- Main Panel -->
+    <div id="mainPanel">
+        <div class="panel-header">
+            <h1>Glow SMM Services</h1>
+        </div>
+
+        <div class="category-grid">
+            <button class="category-btn" onclick="showServices('tiktok')">
+                <i class="fab fa-tiktok"></i>
+                TikTok
+            </button>
+            
+            <button class="category-btn" onclick="showServices('youtube')">
+                <i class="fab fa-youtube"></i>
+                YouTube
+            </button>
+
+            <button class="category-btn" onclick="showServices('instagram')">
+                <i class="fab fa-instagram"></i>
+                Instagram
+            </button>
+
+            <button class="category-btn" onclick="showServices('facebook')">
+                <i class="fab fa-facebook"></i>
+                Facebook
+            </button>
+
+            <button class="category-btn" onclick="showServices('twitter')">
+                <i class="fab fa-twitter"></i>
+                Twitter/X
+            </button>
+
+            <button class="category-btn" onclick="showServices('spotify')">
+                <i class="fab fa-spotify"></i>
+                Spotify
+            </button>
+
+            <button class="category-btn" onclick="showServices('telegram')">
+                <i class="fab fa-telegram"></i>
+                Telegram
+            </button>
+
+            <button class="category-btn" onclick="showServices('website')">
+                <i class="fas fa-globe"></i>
+                Website/SEO
+            </button>
+
+            <button class="category-btn" onclick="showServices('specialized')">
+                <i class="fas fa-star"></i>
+                Specialized
+            </button>
+
+            <button class="category-btn" onclick="showServices('country')">
+                <i class="fas fa-flag"></i>
+                Country
+            </button>
+        </div>
+
+        <div class="service-grid" id="servicesContainer"></div>
+
+        <!-- Payment Box -->
+        <div class="payment-box" id="paymentBox">
+            <h2>Complete Payment</h2>
+            <div class="payment-details">
+                <h3>Send Payment To:</h3>
+                <p>JazzCash: <strong>03277797278</strong></p>
+                <p>EasyPaisa: <strong>03277797278</strong></p>
+                <p>Account Name: <strong>Safdar Ali</strong></p>
+            </div>
+            
+            <div class="input-group">
+                <input type="url" id="orderLink" placeholder="Profile/Video Link" required>
+            </div>
+            
+            <div class="input-group">
+                <select id="paymentMethod" class="auth-btn" style="width:100%">
+                    <option value="jazzcash">JazzCash</option>
+                    <option value="easypaisa">EasyPaisa</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <input type="text" id="transactionId" placeholder="Transaction ID" required>
+            </div>
+            
+            <div class="input-group">
+                <input type="tel" id="userNumber" placeholder="Your WhatsApp Number" required>
+            </div>
+            
+            <button class="auth-btn" onclick="confirmPayment()">
+                <i class="fab fa-whatsapp"></i> Confirm via WhatsApp
+            </button>
+        </div>
+
+        <a href="https://wa.me/923438220191" 
+           class="auth-btn" 
+           style="position:fixed; bottom:30px; right:30px; width:auto;"
+           target="_blank">
+            <i class="fab fa-whatsapp"></i> 24/7 Support
+        </a>
+    </div>
+
+    <script>
+        // All Services Added
+        const services = {
+            tiktok: [
+                { name: "TikTok Likes (Instant)", price: 180, min: 500 },
+                { name: "TikTok PAK Followers", price: 650, min: 500 },
+                { name: "TikTok USA Followers", price: 550, min: 500 },
+                { name: "TikTok UK Followers", price: 600, min: 500 },
+                { name: "TikTok Comments", price: 300, min: 500 },
+                { name: "TikTok Live Views", price: 305, min: 500 },
+                { name: "TikTok Shares", price: 200, min: 500 },
+                { name: "TikTok Video Downloads", price: 150, min: 500 },
+                { name: "TikTok Profile Visits", price: 100, min: 500 },
+                { name: "TikTok Verified Badge", price: 15000, min: 1 }
+            ],
+            youtube: [
+                { name: "YouTube Subscribers (Real)", price: 1050, min: 500 },
+                { name: "YouTube Subscribers (Premium)", price: 1500, min: 500 },
+                { name: "YouTube Likes", price: 500, min: 500 },
+                { name: "YouTube Dislikes", price: 50, min: 500 },
+                { name: "YouTube Views (Instant)", price: 300, min: 500 },
+                { name: "YouTube Views (HR)", price: 500, min: 500 },
+                { name: "YouTube Watch Hours", price: 8000, min: 500 },
+                { name: "YouTube Comments", price: 300, min: 500 },
+                { name: "YouTube Shares", price: 50, min: 500 }
+            ],
+            instagram: [
+                { name: "Instagram Followers (Real)", price: 1000, min: 500 },
+                { name: "Instagram Followers (Premium)", price: 1490, min: 500 },
+                { name: "Instagram Likes (Photo)", price: 50, min: 500 },
+                { name: "Instagram Likes (Reels)", price: 850, min: 500 },
+                { name: "Instagram Story Views", price: 150, min: 500 },
+                { name: "Instagram Reels Views", price: 200, min: 500 },
+                { name: "Instagram Comments", price: 50, min: 500 }
+            ],
+            facebook: [
+                { name: "Facebook Page Likes", price: 180, min: 500 },
+                { name: "Facebook Post Likes", price: 100, min: 500 },
+                { name: "Facebook Followers", price: 250, min: 500 },
+                { name: "Facebook Comments", price: 150, min: 500 }
+            ],
+            twitter: [
+                { name: "Twitter Followers", price: 700, min: 500 },
+                { name: "Twitter Likes", price: 150, min: 500 },
+                { name: "Twitter Retweets", price: 200, min: 500 },
+                { name: "Twitter Comments", price: 300, min: 500 }
+            ],
+            spotify: [
+                { name: "Spotify Plays", price: 300, min: 500 },
+                { name: "Spotify Followers", price: 500, min: 500 },
+                { name: "Spotify Playlist Followers", price: 400, min: 500 }
+            ],
+            telegram: [
+                { name: "Telegram Group Members", price: 350, min: 500 },
+                { name: "Telegram Channel Subscribers", price: 400, min: 500 }
+            ],
+            website: [
+                { name: "Website Traffic (Global)", price: 200, min: 500 },
+                { name: "Google Reviews (5 Star)", price: 500, min: 500 }
+            ],
+            specialized: [
+                { name: "Google Maps Reviews", price: 500, min: 500 },
+                { name: "LinkedIn Followers", price: 700, min: 500 }
+            ],
+            country: [
+                { name: "Saudi TikTok Followers", price: 900, min: 500 },
+                { name: "India IG Followers", price: 750, min: 500 }
+            ]
+        };
+
+        let currentService = null;
+        
+        function login() {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('mainPanel').style.display = 'block';
+        }
+
+        function showServices(platform) {
+            const container = document.getElementById('servicesContainer');
+            container.innerHTML = services[platform].map(service => `
+                <div class="service-card">
+                    <h3>${service.name}</h3>
+                    <p>PKR ${service.price} (Min ${service.min}+)</p>
+                    <button class="auth-btn" onclick="openPayment('${service.name}', ${service.price})">
+                        Order Now
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function openPayment(name, price) {
+            currentService = { name, price };
+            document.getElementById('paymentBox').style.display = 'block';
+        }
+
+        function confirmPayment() {
+            const link = document.getElementById('orderLink').value;
+            const method = document.getElementById('paymentMethod').value;
+            const trxId = document.getElementById('transactionId').value;
+            const number = document.getElementById('userNumber').value;
+            
+            const message = `📣 **New Order**%0A
+📌 Service: ${currentService.name}%0A
+🔗 Link: ${link}%0A
+💰 Amount: PKR ${currentService.price}%0A
+📱 Payment Method: ${method}%0A
+🔢 Transaction ID: ${trxId}%0A
+📞 Contact: ${number}%0A
+✅ Paid to: 03277797278 (Safdar Ali)`;
+
+            window.open(`https://wa.me/923438220191?text=${encodeURIComponent(message)}`, '_blank');
+            document.getElementById('paymentBox').style.display = 'none';
+        }
+
+        function showRegister() {
+            document.getElementById('authSection').innerHTML = `
+                <div class="brand-header">
+                    <i class="fas fa-user-plus"></i>
+                    <h1>Create Account</h1>
+                </div>
+                
+                <div class="input-group">
+                    <input type="email" placeholder="Email" id="regEmail">
+                </div>
+                
+                <div class="input-group">
+                    <input type="tel" placeholder="Phone Number" id="regPhone">
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" placeholder="Password" id="regPass">
+                </div>
+                
+                <button class="auth-btn" onclick="register()">Register</button>
+                
+                <p style="text-align:center; margin-top:1rem;">
+                    Already user? <a href="#" style="color:var(--glow)" onclick="location.reload()">Login</a>
+                </p>
+            `;
+        }
+
+        function register() {
+            alert('Registration successful!');
+            login();
+        }
+    </script>
+</body>
+</html>
